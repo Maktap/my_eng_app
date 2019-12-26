@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:my_eng_app/database/database_helper.dart';
 import 'package:my_eng_app/utils/kelime_duzenle.dart';
 import 'package:my_eng_app/utils/kelimeler.dart';
 
@@ -9,7 +10,7 @@ enum WhyFarther { harder, smarter, selfStarter, tradingCharter }
 
 class Detay extends StatefulWidget {
   final List<Kelimeler> _liste;
-  final int _index;
+  final int _index;  
   Detay(this._liste, this._index);
 
   @override
@@ -20,10 +21,12 @@ class _DetayState extends State<Detay> with SingleTickerProviderStateMixin {
   AnimationController _controller;
   Animation<double> _frontScale;
   Animation<double> _backScale;
+  DatabaseHelper _databaseHelper;
 
   @override
   void initState() {
     super.initState();
+    _databaseHelper = DatabaseHelper();
     _controller = new AnimationController(
       vsync: this,
       duration: const Duration(seconds: 1),
@@ -74,7 +77,11 @@ class _DetayState extends State<Detay> with SingleTickerProviderStateMixin {
                       buttonTextNo: 'Hayır',
                       image: 'assets/images/stunned.jpg',
                     ),
-                  ).then((val) => print(val));
+                  ).then((val){                    
+                    if(val==null){
+                      _databaseHelper.kelimeleriDELETE(widget._liste[widget._index].getKelimeID);
+                    }
+                  });
                   break;
                 default:
               }

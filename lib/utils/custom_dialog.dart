@@ -87,7 +87,7 @@ class CustomDialog extends StatelessWidget {
                   FlatButton(
                     child: Text(buttonTextNo),
                     onPressed: () {
-                      Navigator.of(context).pop(false);
+                       Navigator.of(context).pop(false);
                     },
                   )
                 ],

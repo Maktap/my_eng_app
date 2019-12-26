@@ -79,13 +79,16 @@ class _MyHomePageState extends State<MyHomePage>
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
-        bottom: TabBar(labelStyle: TextStyle(fontSize: 18),
+        bottom: TabBar(
+          labelStyle: TextStyle(fontSize: 18),
           onTap: (tabIndex) {
             setState(() {});
           },
           controller: _tabController,
           tabs: <Widget>[
-            Tab(text: "Kelimeler",),
+            Tab(
+              text: "Kelimeler",
+            ),
             Tab(text: "Tamamlanan"),
           ],
         ),
@@ -147,11 +150,22 @@ class _MyHomePageState extends State<MyHomePage>
         itemBuilder: (BuildContext context, int index) {
           return Dismissible(
             confirmDismiss: (direction) async {
-              return await showDialog(
-                  context: context,
-                  builder: (context) {
-                    return buildAlertDialog(liste, index, context);
-                  });
+              if (direction == DismissDirection.endToStart) {
+                return await showDialog(
+                    context: context,
+                    builder: (context) {
+                      String _icerik;
+                      (liste[index].getlearned == 0)
+                          ? _icerik =
+                              'Bu kelimeyi Tamamlanmış kısmına atmak isyor musunuz'
+                          : _icerik =
+                              'Bu kelimeyi Tamamlanmamış kısmına atmak isyor musunuz';
+
+                      return buildAlertDialog(liste, index, context, _icerik);
+                    });
+              } else {
+                return kelimeSil(liste[index]);
+              }
             },
             key: UniqueKey(),
             child: GestureDetector(
@@ -172,7 +186,9 @@ class _MyHomePageState extends State<MyHomePage>
                   child: Container(
                     decoration: BoxDecoration(
                         boxShadow: [
-                          BoxShadow(color: Colors.black.withOpacity(0.2), offset: Offset(15, 15))
+                          BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              offset: Offset(15, 15))
                         ],
                         border: Border.all(),
                         borderRadius: BorderRadius.circular(20),
@@ -217,10 +233,10 @@ class _MyHomePageState extends State<MyHomePage>
       );
 
   AlertDialog buildAlertDialog(
-      List<Kelimeler> liste, int index, BuildContext context) {
+      List<Kelimeler> liste, int index, BuildContext context, String content) {
     return AlertDialog(
       title: Text("Uyarı"),
-      content: Text("Bu kelimenin tamamlananlar kısmına eklensin mi?"),
+      content: Text(content),
       actions: <Widget>[
         FlatButton(
           onPressed: () async {
@@ -258,9 +274,18 @@ class _MyHomePageState extends State<MyHomePage>
           onPressed: () {
             Navigator.pop(context, false);
           },
-          child: Text("Hayır",style: TextStyle(color: Colors.red),),
+          child: Text(
+            "Hayır",
+            style: TextStyle(color: Colors.red),
+          ),
         )
       ],
     );
+  }
+
+  kelimeSil(Kelimeler silinecekKelime) {
+    setState(()  {
+       _databaseHelper.kelimeleriDELETE(silinecekKelime.getKelimeID);
+    });
   }
 }
